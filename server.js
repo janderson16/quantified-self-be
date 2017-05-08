@@ -14,19 +14,7 @@ app.locals.title = 'Quantified Self'
 
 
 // Index
-app.get('/api/v1/foods', function(request, response) {
-  // response.send('It\'s a secret to everyone.')
-  response.json([
-    {
-      id: 1,
-      name: 'Chocolate'
-    },
-    {
-      id: 2,
-      name: 'Chips & Salsa'
-    }
-  ]);
-});
+app.get('/api/v1/foods', FoodsController.index);
 
 // Create
 app.post('/api/v1/foods', function(request, response) {
