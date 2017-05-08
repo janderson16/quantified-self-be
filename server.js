@@ -5,6 +5,13 @@ var app = express();
 var bodyParser = require('body-parser');
 var FoodsController = require('./lib/controllers/foods-controller')
 var md5 = require('md5')
+var pry = require('pryjs')
+
+// var Food = require('./lib/models/food')
+// var environment   = process.env.NODE_ENV || 'development'
+// var configuration = require('./knexfile')[environment]
+// var database      = require('knex')(configuration)
+
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -17,12 +24,10 @@ app.locals.title = 'Quantified Self'
 app.get('/api/v1/foods', FoodsController.index);
 
 // Create
-app.post('/api/v1/foods', function(request, response) {
-  // response.status(201).end();
-});
+app.post('/api/v1/foods', FoodsController.create);
 
 // Show
-app.get('/api/v1/foods/:id', FoodsController.show)
+app.get('/api/v1/foods/:id', FoodsController.show);
 
 
 // Edit
