@@ -184,4 +184,52 @@ describe('Server', function(){
       })
     })
   });
+
+  describe('PUT /api/v1/foods/:id', function(){
+    beforeEach(function(done){
+      database.raw('INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+        ["Banana", 400, true, new Date, new Date])
+      .then(function(){
+        done();
+      });
+    });
+
+    afterEach(function(done){
+      database.raw('TRUNCATE foods RESTART IDENTITY')
+      .then(function(){
+        done();
+      });
+    });
+
+    it('should return 404 if resource is not found', function(done) {
+      this.request.get('/api/v1/foods/10000', function(error, response) {
+        if (error) { done(error) }
+        assert.equal(response.statusCode, 404);
+        done();
+      });
+    });
+
+    xit('should return a 200 if the response is found', function(done){
+      this.request.get('/api/v1/foods/1', function(error, response){
+        if(error){ done(error) }
+        assert.equal(response.statusCode, 200);
+        done();
+      });
+    });
+
+    it('should have the id and the name from the resource', function(done){
+      var id = 1
+      var edit_food = { name: 'Chocolate', calories: 500, active: false, updated_at: new Date }
+      this.request.put('/api/v1/foods/1', {form: edit_food}, function(error, response) {
+        let parsedFood = JSON.parse(response.body.toString());
+
+        assert.equal(response.statusCode, 200);
+        assert.equal(parsedFood.id, id);
+        assert.equal(parsedFood.name, edit_food.name);
+        assert.equal(parsedFood.calories, edit_food.calories);
+        assert.equal(parsedFood.active, edit_food.active);
+        done();
+      })
+    })
+  });
 });

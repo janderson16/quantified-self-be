@@ -7,10 +7,11 @@ var FoodsController = require('./lib/controllers/foods-controller')
 var md5 = require('md5')
 var pry = require('pryjs')
 
-// var Food = require('./lib/models/food')
-// var environment   = process.env.NODE_ENV || 'development'
-// var configuration = require('./knexfile')[environment]
-// var database      = require('knex')(configuration)
+
+var Food = require('./lib/models/food')
+var environment   = process.env.NODE_ENV || 'development'
+var configuration = require('./knexfile')[environment]
+var database      = require('knex')(configuration)
 
 
 app.use(bodyParser.json())
@@ -29,10 +30,20 @@ app.post('/api/v1/foods', FoodsController.create);
 // Show
 app.get('/api/v1/foods/:id', FoodsController.show);
 
-
-// Edit
+// Update
 app.put('/api/v1/foods/:id', function(request, response) {
-  // response.send('It\'s a secret to everyone.')
+  colsAndVals = ''
+  for (var i = 0; i < Object.keys(request.body).length; i++) {
+    var key = Object.keys(request.body)[i]
+    var val = request.body[key]
+    keyValStr = key + " = '" + val + "', "
+    colsAndVals += keyValStr
+  }
+  database.raw("UPDATE foods SET " + colsAndVals.slice(0, -2) + " WHERE id = " + request.params.id.toString() + " RETURNING *")
+  .then(function(data) {
+    update_food = data.rows[0]
+    response.json(update_food)
+  });
 });
 
 // Delete
