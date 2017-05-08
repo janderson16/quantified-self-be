@@ -1,8 +1,15 @@
 // server.js
-const express = require('express')
-const app = express()
 
-app.set('port', process.env.PORT || 3000)
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var FoodsController = require('./lib/controllers/foods-controller')
+var md5 = require('md5')
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Quantified Self'
 
 
@@ -27,11 +34,8 @@ app.post('/api/v1/foods', function(request, response) {
 });
 
 // Show
-app.get('/api/v1/foods/:id', function(request, response) {
-  response.json({
-    id: request.params.id
-  });;
-});
+app.get('/api/v1/foods/:id', FoodsController.show)
+
 
 // Edit
 app.put('/api/v1/foods/:id', function(request, response) {
