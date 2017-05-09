@@ -53,14 +53,6 @@ describe('Server', function(){
       });
     });
 
-    xit('should return 404 if resource is not found', function(done) {
-      this.request.get('/api/v1/foods', function(error, response) {
-        if (error) { done(error) }
-        assert.equal(response.statusCode, 404);
-        done();
-      });
-    });
-
     it('should return a 200 if the response is found', function(done){
       this.request.get('/api/v1/foods', function(error, response){
         if(error){ done(error) }
@@ -69,7 +61,7 @@ describe('Server', function(){
       });
     });
 
-    it('should have the ids and the names from the resources', function(done){
+    it('should return all parameters for all food items', function(done){
       this.request.get('/api/v1/foods', function(error, response){
         if(error){ done(error) }
 
@@ -85,6 +77,15 @@ describe('Server', function(){
         assert.include(['Banana', 'Chocolate'], parsedFoods[0].name);
         assert.include(['Banana', 'Chocolate'], parsedFoods[1].name);
         assert.notEqual(parsedFoods[0].name, parsedFoods[1].name);
+        assert.include([400, 500], parsedFoods[0].calories);
+        assert.include([400, 500], parsedFoods[1].calories);
+        assert.notEqual(parsedFoods[0].calories, parsedFoods[1].calories);
+        assert.equal(parsedFoods[0].active, true)
+        assert.equal(parsedFoods[1].active, true)
+        assert.ok(parsedFoods[0].created_at)
+        assert.ok(parsedFoods[1].created_at)
+        assert.ok(parsedFoods[0].updated_at)
+        assert.ok(parsedFoods[1].updated_at)
         done();
       })
     })
@@ -122,17 +123,17 @@ describe('Server', function(){
       });
     });
 
-    it('should have the id and the name from the resource', function(done){
+    it('should return the all the parameters for the food item', function(done){
       this.request.get('/api/v1/foods/1', function(error, response){
         if(error){ done(error) }
-
-        var id = 1;
-        var name = 'Banana';
         let parsedFood = JSON.parse(response.body.toString());
 
-        assert.equal(parsedFood.id, id);
-        assert.equal(parsedFood.name, name);
+        assert.equal(parsedFood.id, 1);
+        assert.equal(parsedFood.name, 'Banana');
+        assert.equal(parsedFood.calories, 400);
+        assert.equal(parsedFood.active, true);
         assert.ok(parsedFood.created_at);
+        assert.ok(parsedFood.updated_at);
         done();
       })
     })
@@ -154,23 +155,7 @@ describe('Server', function(){
       });
     });
 
-    xit('should return 404 if resource is not found', function(done) {
-      this.request.get('/api/v1/foods/10000', function(error, response) {
-        if (error) { done(error) }
-        assert.equal(response.statusCode, 404);
-        done();
-      });
-    });
-
-    xit('should return a 200 if the response is found', function(done){
-      this.request.get('/api/v1/foods/1', function(error, response){
-        if(error){ done(error) }
-        assert.equal(response.statusCode, 200);
-        done();
-      });
-    });
-
-    it('should have the id and the name from the resource', function(done){
+    it('should create a new food item', function(done){
       var id = 2;
       var new_food = { name: 'Chocolate', calories: 500, active: true, created_at: new Date, updated_at: new Date }
       this.request.post('/api/v1/foods', {form: new_food}, function(error, response) {
@@ -202,32 +187,63 @@ describe('Server', function(){
     });
 
     it('should return 404 if resource is not found', function(done) {
-      this.request.get('/api/v1/foods/10000', function(error, response) {
+      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      this.request.put('/api/v1/foods/10000', {form: edit_food}, function(error, response) {
         if (error) { done(error) }
         assert.equal(response.statusCode, 404);
         done();
       });
     });
 
-    xit('should return a 200 if the response is found', function(done){
-      this.request.get('/api/v1/foods/1', function(error, response){
-        if(error){ done(error) }
-        assert.equal(response.statusCode, 200);
-        done();
-      });
-    });
-
-    it('should have the id and the name from the resource', function(done){
-      var id = 1
-      var edit_food = { name: 'Chocolate', calories: 500, active: false, updated_at: new Date }
+    it('should update the name and/or calories for the food item', function(done){
+      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
       this.request.put('/api/v1/foods/1', {form: edit_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
         assert.equal(response.statusCode, 200);
-        assert.equal(parsedFood.id, id);
+        assert.equal(parsedFood.id, 1);
         assert.equal(parsedFood.name, edit_food.name);
         assert.equal(parsedFood.calories, edit_food.calories);
-        assert.equal(parsedFood.active, edit_food.active);
+        assert.equal(parsedFood.active, true);
+        done();
+      })
+    })
+  });
+
+  describe('DELETE /api/v1/foods/:id', function(){
+    beforeEach(function(done){
+      Promise.all([
+        database.raw(
+          'INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+          ["Banana", 400, true, new Date, new Date]
+        ),
+        database.raw(
+          'INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+          ["Chocolate", 500, true, new Date, new Date]
+        )
+      ])
+      .then(function(){
+        done();
+      });
+    });
+
+    afterEach(function(done){
+      database.raw('TRUNCATE foods RESTART IDENTITY')
+      .then(function(){
+        done();
+      });
+    });
+
+    it('should inactivate a food item', function(done){
+      this.request.delete('/api/v1/foods/1', function(error, response){
+        if(error){ done(error) }
+        let parsedFood = JSON.parse(response.body.toString());
+
+        assert.equal(response.statusCode, 200);
+        assert.equal(parsedFood.id, 1);
+        assert.equal(parsedFood.name, 'Banana');
+        assert.equal(parsedFood.calories, 400);
+        assert.equal(parsedFood.active, false);
         done();
       })
     })

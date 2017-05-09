@@ -39,16 +39,25 @@ app.put('/api/v1/foods/:id', function(request, response) {
     keyValStr = key + " = '" + val + "', "
     colsAndVals += keyValStr
   }
-  database.raw("UPDATE foods SET " + colsAndVals.slice(0, -2) + " WHERE id = " + request.params.id.toString() + " RETURNING *")
+  query = "UPDATE foods SET " + colsAndVals.slice(0, -2) + " WHERE id = " + request.params.id.toString() + " RETURNING *"
+  database.raw(query)
   .then(function(data) {
     update_food = data.rows[0]
-    response.json(update_food)
+    if(!update_food) {
+      response.sendStatus(404)
+    }else{
+      response.json(update_food)
+    }
   });
 });
 
 // Delete
 app.delete('/api/v1/foods/:id', function(request, response) {
-  // response.send('It\'s a secret to everyone.')
+  database.raw("UPDATE foods SET active = 'false', updated_at = '" + JSON.stringify(new Date) + "' WHERE id = " + request.params.id.toString() + " RETURNING *")
+  .then(function(data) {
+    inactive_food = data.rows[0]
+    response.json(inactive_food)
+  });
 });
 
 app.listen(app.get('port'), function() {
