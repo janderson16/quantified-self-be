@@ -1,14 +1,16 @@
 exports.up = function(knex, Promise) {
-  let createQuery = `CREATE TABLE mealFoods(
-    id SERIAL PRIMARY KEY NOT NULL,
-    meal_id integer references meals(id),
-    food_id integer references foods(id),
-    created_at TIMESTAMP
-  )`;
-  return knex.raw(createQuery);
+  return Promise.all([
+    knex.schema.createTable('meal_foods', function(table){
+      table.increments('id').primary();
+      table.integer('food_id').references('foods.id');
+      table.integer('meal_id').references('meals.id');
+      table.date('diary_date');
+    })
+  ]);
 };
 
 exports.down = function(knex, Promise) {
-  let dropQuery = `DROP TABLE mealFoods`;
-  return knex.raw(dropQuery);
+  return Promise.all([
+    knex.schema.dropTable('meal_foods')
+  ]);
 };

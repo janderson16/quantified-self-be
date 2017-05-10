@@ -8,6 +8,10 @@ var environment   = process.env.NODE_ENV || 'test'
 var configuration = require('../knexfile')[environment]
 var database      = require('knex')(configuration)
 
+var Food     = require('../lib/models/food')
+var Meal     = require('../lib/models/meal')
+var MealFood = require('../lib/models/meal-food')
+
 describe('Server', function(){
   before(function(done){
     this.port = 9876;
@@ -32,14 +36,8 @@ describe('Server', function(){
   describe('GET /api/v1/foods', function(){
     beforeEach(function(done){
       Promise.all([
-        database.raw(
-          'INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-          ["Banana", 400, true, new Date, new Date]
-        ),
-        database.raw(
-          'INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-          ["Chocolate", 500, true, new Date, new Date]
-        )
+        Food.create(['Banana', 400, true, new Date, new Date]),
+        Food.create(['Chocolate', 500, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -47,7 +45,7 @@ describe('Server', function(){
     });
 
     afterEach(function(done){
-      database.raw('TRUNCATE foods RESTART IDENTITY')
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
       .then(function(){
         done();
       });
@@ -64,11 +62,6 @@ describe('Server', function(){
     it('should return all parameters for all food items', function(done){
       this.request.get('/api/v1/foods', function(error, response){
         if(error){ done(error) }
-
-        var id1 = 1;
-        var name1 = 'Banana';
-        var id2 = 2;
-        var name2 = 'Chocolate';
         let parsedFoods = JSON.parse(response.body.toString());
 
         assert.include([1, 2], parsedFoods[0].id);
@@ -93,15 +86,16 @@ describe('Server', function(){
 
   describe('GET /api/v1/foods/:id', function(){
     beforeEach(function(done){
-      database.raw('INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-        ["Banana", 400, true, new Date, new Date])
+      Promise.all([
+        Food.create(['Banana', 400, true, new Date, new Date])
+      ])
       .then(function(){
         done();
       });
     });
 
     afterEach(function(done){
-      database.raw('TRUNCATE foods RESTART IDENTITY')
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
       .then(function(){
         done();
       });
@@ -141,15 +135,16 @@ describe('Server', function(){
 
   describe('POST /api/v1/foods', function(){
     beforeEach(function(done){
-      database.raw('INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-        ["Banana", 400, true, new Date, new Date])
+      Promise.all([
+        Food.create(['Banana', 400, true, new Date, new Date])
+      ])
       .then(function(){
         done();
       });
     });
 
     afterEach(function(done){
-      database.raw('TRUNCATE foods RESTART IDENTITY')
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
       .then(function(){
         done();
       });
@@ -172,15 +167,16 @@ describe('Server', function(){
 
   describe('PUT /api/v1/foods/:id', function(){
     beforeEach(function(done){
-      database.raw('INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-        ["Banana", 400, true, new Date, new Date])
+      Promise.all([
+        Food.create(['Banana', 400, true, new Date, new Date])
+      ])
       .then(function(){
         done();
       });
     });
 
     afterEach(function(done){
-      database.raw('TRUNCATE foods RESTART IDENTITY')
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
       .then(function(){
         done();
       });
@@ -213,14 +209,8 @@ describe('Server', function(){
   describe('DELETE /api/v1/foods/:id', function(){
     beforeEach(function(done){
       Promise.all([
-        database.raw(
-          'INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-          ["Banana", 400, true, new Date, new Date]
-        ),
-        database.raw(
-          'INSERT INTO foods (name, calories, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-          ["Chocolate", 500, true, new Date, new Date]
-        )
+        Food.create(['Banana', 400, true, new Date, new Date]),
+        Food.create(['Chocolate', 500, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -228,7 +218,7 @@ describe('Server', function(){
     });
 
     afterEach(function(done){
-      database.raw('TRUNCATE foods RESTART IDENTITY')
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
       .then(function(){
         done();
       });
@@ -248,4 +238,54 @@ describe('Server', function(){
       })
     })
   });
+
+  describe('GET /api/v1/meals/:name', function(){
+    beforeEach(function(){
+      return Meal.create2('lunch')
+        .then(function(result) {
+            assert.equal(result.rows[0].id, 1);
+            return Food.create(['Banana', 400, true, new Date, new Date]);
+        }).then(function(result) {
+            assert.equal(result.rows[0].id, 1);
+            return MealFood.create2(1, 1, new Date);
+        }).then(function(result) {
+            assert.equal(result.rows[0].id, 1);
+        });
+    });
+
+    afterEach(function(done){
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
+      .then(function(){
+        done();
+      });
+    });
+
+    it('should return 404 if resource is not found', function(done) {
+      this.request.get('/api/v1/meals/brunch', function(error, response) {
+        if (error) { done(error) }
+        assert.equal(response.statusCode, 404);
+        done();
+      });
+    });
+
+    it('should return a 200 if the response is found', function(done){
+      this.request.get('/api/v1/meals/lunch', function(error, response){
+        if(error){ done(error) }
+        assert.equal(response.statusCode, 200);
+        done();
+      });
+    });
+
+    it('should return the all the parameters for the food item', function(done){
+      this.request.get('/api/v1/meals/lunch', function(error, response){
+        if(error){ done(error) }
+        let parsedFood = JSON.parse(response.body.toString());
+
+        assert.equal(parsedFood.name, 'Banana');
+        assert.equal(parsedFood.calories, 400);
+        done();
+      })
+    })
+  });
 });
+

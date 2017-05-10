@@ -1,4 +1,5 @@
 // server.js
+var { database, TABLES } = require('./db');
 
 var express = require('express');
 var app = express();
@@ -19,6 +20,22 @@ app.get('/api/v1/foods/:id', FoodsController.show);
 app.put('/api/v1/foods/:id', FoodsController.update);
 app.delete('/api/v1/foods/:id', FoodsController.delete);
 
+// Meals
+app.get('/api/v1/meals/:name', function(request, response){
+  database.select(`${TABLES.FOODS}.name`, `${TABLES.FOODS}.calories`)
+    .from(TABLES.FOODS)
+    .innerJoin(TABLES.MEAL_FOODS, `${TABLES.MEAL_FOODS}.food_id`, `${TABLES.FOODS}.id`)
+    .innerJoin(TABLES.MEALS, `${TABLES.MEAL_FOODS}.meal_id`, `${TABLES.MEALS}.id`)
+    .where(`${TABLES.MEALS}.name`, request.params.name)
+  .then(function(data) {
+    meal = data[0]
+    if(!meal) {
+      response.sendStatus(404)
+    }else{
+      response.json(meal)
+    }
+  });
+});
 app.listen(app.get('port'), function() {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`)
 });
