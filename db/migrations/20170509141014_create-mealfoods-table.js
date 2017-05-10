@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
       table.increments('id').primary();
       table.integer('food_id').references('foods.id');
       table.integer('meal_id').references('meals.id');
-      table.date('diary_date');
+      table.date('date');
     })
   ]);
 };
