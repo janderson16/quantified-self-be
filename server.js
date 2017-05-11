@@ -1,12 +1,14 @@
 // server.js
-var { database, TABLES } = require('./db');
-
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var FoodsController = require('./lib/controllers/foods-controller')
 var md5 = require('md5')
+var cors = require('cors')
 
+var { database, TABLES } = require('./db');
+var FoodsController = require('./lib/controllers/foods-controller')
+
+app.use(cors({origin: '*'}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -22,7 +24,8 @@ app.delete('/api/v1/foods/:id', FoodsController.delete);
 
 // Meals
 app.get('/api/v1/meals/:name', function(request, response){
-  whereClause = {'meals.name': request.params.name}
+  whereClause = {}
+  whereClause[`${TABLES.MEALS}.name`] = request.params.name
   if(Object.keys(request.query).length > 0) {
     Object.assign(whereClause, request.query)
   }
