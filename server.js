@@ -15,6 +15,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Quantified Self'
 
+// Root
+app.get('/', function(request, response) {
+  response.sendStatus(200)
+})
+
 // Foods
 app.get('/api/v1/foods', FoodsController.index);
 app.post('/api/v1/foods', FoodsController.create);
