@@ -15,10 +15,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Quantified Self'
 
-// Root
-app.get('/', function(request, response) {
-  response.sendStatus(200)
-})
 
 // Foods
 app.get('/api/v1/foods', FoodsController.index);
@@ -70,10 +66,6 @@ app.get('/api/v1/meals', function(request, response){
       response.json(sorted)
     }
   });
-});
-
-app.listen(app.get('port'), function() {
-  console.log(`${app.locals.title} is running on ${app.get('port')}.`)
 });
 
 if (!module.parent) {
