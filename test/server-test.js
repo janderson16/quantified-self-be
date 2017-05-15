@@ -152,15 +152,28 @@ describe('Server', function(){
     });
 
     it('should create a new food item', function(done){
-      var id = 2;
       var new_food = { name: 'Chocolate', calories: 500, active: true, created_at: new Date, updated_at: new Date }
       this.request.post('/api/v1/foods', {form: new_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
         assert.equal(response.statusCode, 200);
-        assert.equal(parsedFood.id, id);
+        assert.equal(parsedFood.id, 2);
         assert.equal(parsedFood.name, new_food.name);
         assert.equal(parsedFood.calories, new_food.calories);
+        done();
+      })
+    })
+
+    it('should have defaults for active and timestamps', function(done){
+      var new_food = { name: 'Chocolate', calories: 500 }
+      this.request.post('/api/v1/foods', {form: new_food}, function(error, response) {
+        let parsedFood = JSON.parse(response.body.toString());
+
+        assert.equal(response.statusCode, 200);
+        assert.equal(parsedFood.id, 2);
+        assert.equal(parsedFood.name, new_food.name);
+        assert.equal(parsedFood.calories, new_food.calories);
+        assert.equal(parsedFood.active, true);
         done();
       })
     })
