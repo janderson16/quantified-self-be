@@ -1,14 +1,13 @@
+//01_foods.js
 
 exports.seed = function(knex, Promise) {
-  // Deletes ALL existing entries
   return knex.raw('TRUNCATE foods RESTART IDENTITY CASCADE')
     .then(function () {
-      // Inserts seed entries
       return knex('foods').insert([
-        {name: 'Tomato', calories: 100, active: true, created_at: new Date, updated_at: new Date},
-        {name: 'Potato', calories: 200, active: true, created_at: new Date, updated_at: new Date},
-        {name: 'Borsh', calories: 600, active: true, created_at: new Date, updated_at: new Date},
-        {name: 'Gyros', calories: 900, active: true, created_at: new Date, updated_at: new Date}
+        {name: 'tomato', calories: 100, active: true, created_at: new Date, updated_at: new Date},
+        {name: 'potato', calories: 200, active: true, created_at: new Date, updated_at: new Date},
+        {name: 'borsh', calories: 600, active: true, created_at: new Date, updated_at: new Date},
+        {name: 'gyros', calories: 900, active: true, created_at: new Date, updated_at: new Date}
       ]);
     });
 };
