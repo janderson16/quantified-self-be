@@ -37,8 +37,8 @@ describe('Server', function(){
   describe('GET /api/v1/foods', function(){
     beforeEach(function(done){
       Promise.all([
-        Food.create(['Banana', 400, true, new Date, new Date]),
-        Food.create(['Chocolate', 500, true, new Date, new Date])
+        Food.create(['banana', 400, true, new Date, new Date]),
+        Food.create(['chocolate', 500, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -68,8 +68,8 @@ describe('Server', function(){
         assert.include([1, 2], parsedFoods[0].id);
         assert.include([1, 2], parsedFoods[1].id);
         assert.notEqual(parsedFoods[0].id, parsedFoods[1].id);
-        assert.include(['Banana', 'Chocolate'], parsedFoods[0].name);
-        assert.include(['Banana', 'Chocolate'], parsedFoods[1].name);
+        assert.include(['banana', 'chocolate'], parsedFoods[0].name);
+        assert.include(['banana', 'chocolate'], parsedFoods[1].name);
         assert.notEqual(parsedFoods[0].name, parsedFoods[1].name);
         assert.include([400, 500], parsedFoods[0].calories);
         assert.include([400, 500], parsedFoods[1].calories);
@@ -88,7 +88,7 @@ describe('Server', function(){
   describe('GET /api/v1/foods/:id', function(){
     beforeEach(function(done){
       Promise.all([
-        Food.create(['Banana', 400, true, new Date, new Date])
+        Food.create(['banana', 400, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -124,7 +124,7 @@ describe('Server', function(){
         let parsedFood = JSON.parse(response.body.toString());
 
         assert.equal(parsedFood.id, 1);
-        assert.equal(parsedFood.name, 'Banana');
+        assert.equal(parsedFood.name, 'banana');
         assert.equal(parsedFood.calories, 400);
         assert.equal(parsedFood.active, true);
         assert.ok(parsedFood.created_at);
@@ -137,7 +137,7 @@ describe('Server', function(){
   describe('POST /api/v1/foods', function(){
     beforeEach(function(done){
       Promise.all([
-        Food.create(['Banana', 400, true, new Date, new Date])
+        Food.create(['banana', 400, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -152,7 +152,7 @@ describe('Server', function(){
     });
 
     it('should create a new food item', function(done){
-      var new_food = { name: 'Chocolate', calories: 500, active: true, created_at: new Date, updated_at: new Date }
+      var new_food = { name: 'chocolate', calories: 500, active: true, created_at: new Date, updated_at: new Date }
       this.request.post('/api/v1/foods', {form: new_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
@@ -165,7 +165,7 @@ describe('Server', function(){
     })
 
     it('should have defaults for active and timestamps', function(done){
-      var new_food = { name: 'Chocolate', calories: 500 }
+      var new_food = { name: 'chocolate', calories: 500 }
       this.request.post('/api/v1/foods', {form: new_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
@@ -182,7 +182,7 @@ describe('Server', function(){
   describe('PUT /api/v1/foods/:id', function(){
     beforeEach(function(done){
       Promise.all([
-        Food.create(['Banana', 400, true, new Date, new Date])
+        Food.create(['banana', 400, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -197,7 +197,7 @@ describe('Server', function(){
     });
 
     it('should return 404 if resource is not found', function(done) {
-      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      var edit_food = { name: 'chocolate', calories: 500 }
       this.request.put('/api/v1/foods/10000', {form: edit_food}, function(error, response) {
         if (error) { done(error) }
         assert.equal(response.statusCode, 404);
@@ -206,7 +206,7 @@ describe('Server', function(){
     });
 
     it('should update the name and/or calories for the food item', function(done){
-      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      var edit_food = { name: 'chocolate', calories: 500 }
       this.request.put('/api/v1/foods/1', {form: edit_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
@@ -223,8 +223,8 @@ describe('Server', function(){
   describe('DELETE /api/v1/foods/:id', function(){
     beforeEach(function(done){
       Promise.all([
-        Food.create(['Banana', 400, true, new Date, new Date]),
-        Food.create(['Chocolate', 500, true, new Date, new Date])
+        Food.create(['banana', 400, true, new Date, new Date]),
+        Food.create(['chocolate', 500, true, new Date, new Date])
       ])
       .then(function(){
         done();
@@ -245,7 +245,7 @@ describe('Server', function(){
 
         assert.equal(response.statusCode, 200);
         assert.equal(parsedFood.id, 1);
-        assert.equal(parsedFood.name, 'Banana');
+        assert.equal(parsedFood.name, 'banana');
         assert.equal(parsedFood.calories, 400);
         assert.equal(parsedFood.active, false);
         done();
@@ -263,9 +263,9 @@ describe('Server', function(){
         Meal.create2('lunch')
       ]).then(function() {
         Promise.all([
-          Food.create(['Banana', 400, true, today, today]),
-          Food.create(['Chocolate', 500, true, yesterday, yesterday]),
-          Food.create(['Chips', 600, true, yesterday, yesterday])
+          Food.create(['banana', 400, true, today, today]),
+          Food.create(['chocolate', 500, true, yesterday, yesterday]),
+          Food.create(['chips', 600, true, yesterday, yesterday])
         ])
       }).then(function() {
         Promise.all([
@@ -308,7 +308,7 @@ describe('Server', function(){
         let parsedFood = JSON.parse(response.body.toString());
 
         assert.equal(parsedFood.length, 1)
-        assert.equal(parsedFood[0].name, 'Chocolate');
+        assert.equal(parsedFood[0].name, 'chocolate');
         assert.equal(parsedFood[0].calories, 500);
         assert.deepEqual(datePresenter(parsedFood[0].date), datePresenter(new Date));
         done();
@@ -321,10 +321,10 @@ describe('Server', function(){
         let parsedFood = JSON.parse(response.body);
 
         assert.equal(parsedFood.length, 2)
-        assert.equal(parsedFood[0].name, 'Banana');
+        assert.equal(parsedFood[0].name, 'banana');
         assert.equal(parsedFood[0].calories, 400);
         assert.equal(datePresenter(parsedFood[0].date), datePresenter(new Date));
-        assert.equal(parsedFood[1].name, 'Chocolate');
+        assert.equal(parsedFood[1].name, 'chocolate');
         assert.equal(parsedFood[1].calories, 500);
         assert.equal(datePresenter(parsedFood[1].date), datePresenter(new Date));
         done();
@@ -341,9 +341,9 @@ describe('Server', function(){
         Meal.create2('lunch')
       ]).then(function() {
         return Promise.all([
-          Food.create(['Banana', 400, true, today, today]),
-          Food.create(['Chocolate', 500, true, yesterday, yesterday]),
-          Food.create(['Chips', 600, true, yesterday, yesterday])
+          Food.create(['banana', 400, true, today, today]),
+          Food.create(['chocolate', 500, true, yesterday, yesterday]),
+          Food.create(['chips', 600, true, yesterday, yesterday])
         ])
       }).then(function() {
         return Promise.all([
