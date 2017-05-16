@@ -68,6 +68,20 @@ app.get('/api/v1/meals', function(request, response){
   });
 });
 
+app.post('/api/v1/meals', function(request, response){
+  meal_params = [
+    request.body.meal_id,
+    request.body.food_id,
+    request.body.date
+  ]
+  console.log(request.body)
+  database.raw('INSERT INTO meal_foods (meal_id, food_id, date) VALUES (?, ?, ?) RETURNING *', meal_params)
+  .then(function(data) {
+    new_meal_food = data.rows[0]
+    response.json(new_meal_food)
+  });
+});
+
 if (!module.parent) {
   app.listen(app.get('port'), function() {
     console.log(`${app.locals.title} is running on ${app.get('port')}.`);

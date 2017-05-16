@@ -197,7 +197,7 @@ describe('Server', function(){
     });
 
     it('should return 404 if resource is not found', function(done) {
-      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      var edit_food = { name: 'Chocolate', calories: 500 }
       this.request.put('/api/v1/foods/10000', {form: edit_food}, function(error, response) {
         if (error) { done(error) }
         assert.equal(response.statusCode, 404);
@@ -206,7 +206,7 @@ describe('Server', function(){
     });
 
     it('should update the name and/or calories for the food item', function(done){
-      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      var edit_food = { name: 'Chocolate', calories: 500 }
       this.request.put('/api/v1/foods/1', {form: edit_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
@@ -393,7 +393,73 @@ describe('Server', function(){
       })
     })
   });
+
+  describe('POST /api/v1/meals', function(){
+    before(function(done) {
+      var today = new Date;
+      var yesterday = new Date(today - (24 * 60 * 60 * 1000));
+
+      Promise.all([
+        Meal.create2('breakfast'),
+        Meal.create2('lunch')
+      ]).then(function() {
+        return Promise.all([
+          Food.create(['Banana', 400, true, today, today]),
+          Food.create(['Chocolate', 500, true, yesterday, yesterday]),
+          Food.create(['Chips', 600, true, yesterday, yesterday])
+        ])
+      }).then(function() {
+        return Promise.all([
+          MealFood.create2(1, 1, today),
+          MealFood.create2(1, 2, today),
+          MealFood.create2(1, 3, yesterday),
+          MealFood.create2(2, 2, today)
+        ])
+      }).then(function() {
+        done();
+      })
+    })
+
+    after(function(done){
+      database.raw('TRUNCATE foods, meals RESTART IDENTITY CASCADE')
+      .then(function(){
+        done();
+      });
+    });
+
+    // it('should return a 200 if the response is found', function(done){
+    //   this.request.get('/api/v1/meals', function(error, response){
+    //     if(error){ done(error) }
+    //     assert.equal(response.statusCode, 200);
+    //     done();
+    //   });
+    // });
+
+    it('should return the all the parameters for the meal food item', function(done){
+      var new_food = { meal_id: 2, food_id: 3, date: new Date }
+      this.request.post('/api/v1/meals', {form: new_food}, function(error, response) {
+        if(error){ done(error) }
+        let parsedFood = JSON.parse(response.body.toString());
+        console.log(parsedFood)
+        // assert.equal(parsedFood['breakfast'].length, 3)
+        // assert.equal(parsedFood['lunch'].length, 1);
+        done();
+      })
+    })
+
+  //  it('should return the all the parameters for the food item by the queried date', function(done){
+  //     this.request.get('/api/v1/meals?date=' + datePresenter(new Date), function(error, response){
+  //       if(error){ done(error) }
+  //       let parsedFood = JSON.parse(response.body);
+   //
+  //       assert.equal(parsedFood['breakfast'].length, 2)
+  //       assert.equal(parsedFood['lunch'].length, 1);
+  //       done();
+  //     })
+  //   })
+  });
 });
+
 
 function datePresenter(timeStamp){
   return dateFormat(timeStamp, "yyyy-mm-dd");
