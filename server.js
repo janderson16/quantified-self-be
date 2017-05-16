@@ -82,8 +82,6 @@ app.post('/api/v1/meals', function(request, response){
   });
 });
 
-
-
 if (!module.parent) {
   app.listen(app.get('port'), function() {
     console.log(`${app.locals.title} is running on ${app.get('port')}.`);

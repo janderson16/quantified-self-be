@@ -197,7 +197,7 @@ describe('Server', function(){
     });
 
     it('should return 404 if resource is not found', function(done) {
-      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      var edit_food = { name: 'Chocolate', calories: 500 }
       this.request.put('/api/v1/foods/10000', {form: edit_food}, function(error, response) {
         if (error) { done(error) }
         assert.equal(response.statusCode, 404);
@@ -206,7 +206,7 @@ describe('Server', function(){
     });
 
     it('should update the name and/or calories for the food item', function(done){
-      var edit_food = { name: 'Chocolate', calories: 500, updated_at: new Date }
+      var edit_food = { name: 'Chocolate', calories: 500 }
       this.request.put('/api/v1/foods/1', {form: edit_food}, function(error, response) {
         let parsedFood = JSON.parse(response.body.toString());
 
