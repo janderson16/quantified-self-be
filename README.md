@@ -33,7 +33,7 @@
 
 * At least one of the parameters required in body: name, calories
 * Parameters automatically updated: updated_at
-* Parameters discouraged from changing: active, created_at 
+* Parameters discouraged from changing: active, created_at
 * Successful PUT returns food item with all parameters
 * Failed PUT returns 404
 
