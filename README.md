@@ -22,14 +22,14 @@
 * Returns a 404 if no food item is found with specified by ID.
 
 
-## POST /api/v1/foods, body: { form: parameters }
+## POST /api/v1/foods, body: { parameters }
 
 * Required parameters: name, calories
 * Parameters automatically assigned: id, active created_at, updated_at
 * Successful POST returns food item with all parameters
 * Failed POST returns 404
 
-## PUT /api/v1/foods/:id, body: { form: parameters }
+## PUT /api/v1/foods/:id, body: { parameters }
 
 * At least one of the parameters required in body: name, calories
 * Parameters automatically updated: updated_at
@@ -72,7 +72,7 @@
 * food_id: integer
 * date: date
 
-## POST /api/v1/foods, body: { form: parameters }
+## POST /api/v1/foods, body: { parameters }
 
 * Required parameters: meal_id, food_id, date
 * Parameters automatically assigned: id
