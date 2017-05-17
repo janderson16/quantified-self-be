@@ -25,13 +25,16 @@ app.get('/api/v1/foods/:id', FoodsController.show);
 app.put('/api/v1/foods/:id', FoodsController.update);
 app.delete('/api/v1/foods/:id', FoodsController.delete);
 
+
 // Meals
 app.get('/api/v1/meals', MealsController.index);
 app.get('/api/v1/meals/:name', MealsController.show);
 
+
 // MealFoods
-app.post('/api/v1/meals', MealFoodsController.create);
+app.post('/api/v1/meal-foods', MealFoodsController.create);
 app.delete('/api/v1/meal-foods/:id', MealFoodsController.delete);
+
 
 if (!module.parent) {
   app.listen(app.get('port'), function() {
