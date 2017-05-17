@@ -8,6 +8,6 @@ exports.seed = function(knex, Promise) {
         {name: 'lunch'},
         {name: 'dinner'},
         {name: 'snacks'}
-      ]);
-    });
-};
+      ])
+    })
+}

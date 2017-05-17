@@ -6,11 +6,11 @@ exports.up = function(knex, Promise) {
     active BOOLEAN,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
-  )`;
-  return knex.raw(createQuery);
-};
+  )`
+  return knex.raw(createQuery)
+}
 
 exports.down = function(knex, Promise) {
-  let dropQuery = `DROP TABLE foods`;
-  return knex.raw(dropQuery);
-};
+  let dropQuery = `DROP TABLE foods`
+  return knex.raw(dropQuery)
+}

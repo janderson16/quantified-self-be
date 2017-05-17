@@ -8,6 +8,6 @@ exports.seed = function(knex, Promise) {
         {name: 'potato', calories: 200, active: true, created_at: new Date, updated_at: new Date},
         {name: 'borsh', calories: 600, active: true, created_at: new Date, updated_at: new Date},
         {name: 'gyros', calories: 900, active: true, created_at: new Date, updated_at: new Date}
-      ]);
-    });
-};
+      ])
+    })
+}
