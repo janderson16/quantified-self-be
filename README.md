@@ -1,3 +1,12 @@
+# Introduction
+
+This is the backend API for the the quantified-self project, which is a daily food diary. The [frontend half](https://github.com/AELSchauer/quantified-self-fe) of the project allows users to interact with the application through AJAX calls. Users can CRUD foods with a specific calorie amout and then add them to meals (Breakfast, Lunch, Dinner, and Snacks). There is a set meal calorie total and daily calorie total that updates with changes to the diary.
+
+# Production
+
+* [Here is the link to the backend production API](https://immense-oasis-43144.herokuapp.com/)
+* [Her eis the link to the frontend production site](https://aelschauer.github.io/quantified-self-fe/)
+
 # Foods
 
 ### Parameters
@@ -19,15 +28,28 @@
 
 * Returns food item by the specified ID.
   * Parameters: id, name, calories, active, created_at, updated_at
+* Does not support queries.
 * Returns a 404 if no food item is found with specified by ID.
-
 
 ## POST /api/v1/foods, body: { parameters }
 
 * Required parameters: name, calories
-* Parameters automatically assigned: id, active created_at, updated_at
+* Parameters automatically assigned: id, active, created_at, updated_at
 * Successful POST returns food item with all parameters
 * Failed POST returns 404
+
+``post /api/v1/foods, body: { name: 'Tomato', calories 400 }``
+
+returns
+
+`` {
+ id: 1,
+ name: 'Tomato',
+ calories: 400,
+ active: true,
+ created_at: _______,
+ updated_at: _______
+}``
 
 ## PUT /api/v1/foods/:id, body: { parameters }
 
