@@ -5,7 +5,7 @@ This is the backend API for the the quantified-self project, which is a daily fo
 # Production
 
 * [Here is the link to the backend production API](https://immense-oasis-43144.herokuapp.com/)
-* [Her eis the link to the frontend production site](https://aelschauer.github.io/quantified-self-fe/)
+* [Here is the link to the frontend production site](https://aelschauer.github.io/quantified-self-fe/)
 
 # Foods
 
