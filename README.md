@@ -1,6 +1,6 @@
 # Introduction
 
-This is the backend API for the the quantified-self project, which is a daily food diary. The [frontend half](https://github.com/AELSchauer/quantified-self-fe) of the project allows users to interact with the application through AJAX calls. Users can CRUD foods with a specific calorie amout and then add them to meals (Breakfast, Lunch, Dinner, and Snacks). There is a set meal calorie total and daily calorie total that updates with changes to the diary.
+This is the backend API for the the quantified-self project, which is a daily food diary. The [frontend half](https://github.com/janderson16/quantified-self-fe) of the project allows users to interact with the application through AJAX calls. Users can CRUD foods with a specific calorie amout and then add them to meals (Breakfast, Lunch, Dinner, and Snacks). There is a set meal calorie total and daily calorie total that updates with changes to the diary.
 
 # Production
 
